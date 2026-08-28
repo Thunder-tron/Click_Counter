@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Click & Touch Counter</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #111827;
+            color: white;
+        }
+
+        /* Entire interface */
+        #interface {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Main content */
+        .content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .content h1 {
+            font-size: clamp(32px, 6vw, 70px);
+            margin-bottom: 15px;
+        }
+
+        .content p {
+            font-size: clamp(16px, 2vw, 22px);
+            opacity: 0.7;
+        }
+
+        /* Counter */
+        #counterPanel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(10px);
+
+            padding: 15px 20px;
+            border-radius: 15px;
+
+            text-align: center;
+
+            z-index: 100;
+            cursor: default;
+        }
+
+        #counterLabel {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        #counter {
+            font-size: 40px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        /* Reset button */
+        #resetButton {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+
+            padding: 12px 20px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: white;
+            color: #111827;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            z-index: 101;
+        }
+
+        #resetButton:hover {
+            background: #e5e7eb;
+        }
+
+        /* Small click indicator */
+        .clickPoint {
+            position: absolute;
+
+            width: 12px;
+            height: 12px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            pointer-events: none;
+
+            transform: translate(-50%, -50%);
+
+            animation: clickAnimation 0.5s ease-out forwards;
+
+            z-index: 50;
+        }
+
+        @keyframes clickAnimation {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(4);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- EVERYTHING INSIDE THIS AREA IS THE INTERFACE -->
+    <div id="interface">
+
+        <div class="content">
+            <h1>Click Anywhere</h1>
+
+            <p>
+                Click or touch anywhere on the interface
+            </p>
+        </div>
+
+
+        <!-- Counter -->
+        <div id="counterPanel">
+
+            <div id="counterLabel">
+                TOTAL CLICKS / TOUCHES
+            </div>
+
+            <div id="counter">
+                0
+            </div>
+
+        </div>
+
+
+        <!-- Reset -->
+        <button id="resetButton">
+            Reset
+        </button>
+
+    </div>
+
+
+    <script>
+
+        // ==============================
+        // VARIABLES
+        // ==============================
+
+        let count = 0;
+
+        const interfaceArea =
+            document.getElementById("interface");
+
+        const counter =
+            document.getElementById("counter");
+
+        const resetButton =
+            document.getElementById("resetButton");
+
+        const counterPanel =
+            document.getElementById("counterPanel");
+
+
+        // ==============================
+        // COUNT CLICK / TOUCH
+        // ==============================
+
+        interfaceArea.addEventListener(
+            "pointerdown",
+            function (event) {
+
+                /*
+                    Ignore interactions with
+                    the counter and reset button.
+                */
+
+                if (
+                    event.target.closest("#counterPanel") ||
+                    event.target.closest("#resetButton")
+                ) {
+                    return;
+                }
+
+
+                // Increase count
+                count++;
+
+
+                // Update counter
+                counter.textContent = count;
+
+
+                // Create visual click indicator
+                createClickIndicator(
+                    event.clientX,
+                    event.clientY
+                );
+
+            }
+        );
+
+
+        // ==============================
+        // VISUAL CLICK INDICATOR
+        // ==============================
+
+        function createClickIndicator(x, y) {
+
+            const point =
+                document.createElement("div");
+
+            point.classList.add("clickPoint");
+
+            point.style.left = x + "px";
+            point.style.top = y + "px";
+
+            interfaceArea.appendChild(point);
+
+
+            // Remove after animation
+            setTimeout(function () {
+
+                point.remove();
+
+            }, 500);
+
+        }
+
+
+        // ==============================
+        // RESET
+        // ==============================
+
+        resetButton.addEventListener(
+            "click",
+            function (event) {
+
+                // Prevent this click
+                // from reaching the interface
+                event.stopPropagation();
+
+                count = 0;
+
+                counter.textContent = "0";
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
+```
